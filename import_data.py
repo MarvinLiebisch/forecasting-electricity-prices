@@ -22,6 +22,7 @@ def import_clean_data(dropNA=True):
 
     df = import_data()
     df['time'] = pd.to_datetime(df['time'], utc=True)
+    df['time'] = df['time'].dt.tz_convert('Europe/Madrid')
     df = df.set_index('time')
     df = df.drop(columns=['generation hydro pumped storage aggregated', 'forecast wind offshore eday ahead', 'generation marine', 'generation fossil oil shale', 'generation fossil peat', 'generation geothermal', 'generation fossil coal-derived gas', 'generation wind offshore'])
     df.columns = df.columns.str.replace(' ', '_')
