@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 
+
 def import_data(dataset):
     '''Imports sepcified dataset fomr raw_data directory.
 
@@ -19,8 +20,8 @@ def import_data(dataset):
     return df_raw
 
 
-def import_clean_data(dropNA=True):
-    '''Returns cleaned energy data.
+def import_clean_energy_data(dropNA=True):
+    '''Returns clean energy data.
 
         Parameters:
                 dropNA (bool): Default is True (Dropping NA rows)
@@ -28,7 +29,6 @@ def import_clean_data(dropNA=True):
         Returns:
                 DataFrame
     '''
-
     df_energy = import_data('energy_dataset')
     df_energy['time'] = pd.to_datetime(df_energy['time'], utc=True)
     df_energy['time'] = df_energy['time'].dt.tz_convert('Europe/Madrid')
@@ -43,7 +43,7 @@ def import_clean_data(dropNA=True):
 
 
 def import_clean_weather_data():
-    '''Returns cleaned weather data.
+    '''Returns clean weather data.
 
         Parameters:
                 None
