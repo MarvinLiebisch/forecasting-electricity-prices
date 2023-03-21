@@ -117,6 +117,3 @@ def import_merged_data(FeatureEngineering = True, TempMin = False, TempMax = Fal
                                    .add_prefix(city.lower() + '_'))
 
     return df_merged
-
-merged_df = import_merged_data()
-print(merged_df.head())
