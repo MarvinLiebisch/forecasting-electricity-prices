@@ -18,7 +18,7 @@ Our model is predicting the price of the aforementioned day-ahead auctions. We d
 
 ### Data
 
-This project uses the [Hourly energy demand generation and weather](https://www.kaggle.com/datasets/nicholasjhana/energy-consumption-generation-prices-and-weather%3E) from Kaggle. 
+This project uses the [Hourly energy demand generation and weather](https://www.kaggle.com/datasets/nicholasjhana/energy-consumption-generation-prices-and-weather) from Kaggle. 
 
 ###Content
 This dataset contains 4 years of electrical consumption, generation, pricing, and weather data for Spain (2015-2018). Consumption and generation data was retrieved from ENTSOE a public portal for Transmission Service Operator (TSO) data. Settlement prices were obtained from the Spanish TSO Red Electric España. The weather data originates from the Open Weather API for the 5 largest cities in Spain.
