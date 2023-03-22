@@ -57,3 +57,64 @@ def import_clean_weather_data():
     df_weather = df_weather.set_index('time')
 
     return df_weather
+
+
+def import_merged_data(FeatureEngineering = True, TempMin = False, TempMax = False, WeatherIcon = False):
+    '''Returns merged DataFrame containing the energy and weather data.
+
+    Parameters:
+            FeatureEngineering (bool): Default is True
+            (Creates several time based features
+            e.g. season, month, day of week, weekend, hour)
+
+            TempMin, TempMax, WeatherIcon (bool): Default is False
+            (Drops specified weather columns entirely)
+
+    Returns:
+            DataFrame
+    '''
+
+    df_energy = import_clean_energy_data(dropNA=True)
+    df_weather = import_clean_weather_data()
+
+    if FeatureEngineering == True:
+        df_energy['hour'] = df_energy.index.hour
+        df_energy['month'] = df_energy.index.month
+
+        season_dict = {1: 'Winter',
+                    2: 'Winter',
+                    3: 'Spring',
+                    4: 'Spring',
+                    5: 'Spring',
+                    6: 'Summer',
+                    7: 'Summer',
+                    8: 'Summer',
+                    9: 'Fall',
+                    10: 'Fall',
+                    11: 'Fall',
+                    12: 'Winter'}
+
+        df_energy['season'] = df_energy.index.month.map(lambda x: season_dict[x])
+        df_energy['weekend'] = (df_energy.index.dayofweek > 4).astype(int)
+        df_energy['day_of_week'] = df_energy.index.dayofweek
+
+    if TempMin == False:
+        df_weather = df_weather.drop(columns=['temp_min'])
+    if TempMax == False:
+        df_weather = df_weather.drop(columns=['temp_max'])
+    if WeatherIcon == False:
+        df_weather = df_weather.drop(columns=['weather_icon'])
+
+    df_weather['city_name'] = df_weather['city_name'].str.strip()
+    city_array = df_weather['city_name'].unique()
+    grouped = df_weather.groupby(df_weather.city_name)
+    df_merged = df_energy
+
+    for city in city_array:
+        df_merged = df_merged.join(grouped
+                                   .get_group(city)
+                                   .drop(columns=['city_name'])
+                                   .add_prefix(city.lower() + '_'))
+
+    return df_merged
+
