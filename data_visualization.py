@@ -49,7 +49,10 @@ def timeseries_price(df, column, unit, title):
     '''Create timeseries chart for Pandas dataframe
 
     Parameters:
-        df: Pandas dataframe, column, unit, title
+        df: Pandas dataframe,
+        column: the name of columns (str)
+        unit: unit of measurement (str)
+        title: title of the plot (str)
 
     Returns:
         None
@@ -62,11 +65,13 @@ def timeseries_price(df, column, unit, title):
     plt.title(title)
     plt.show()
 
-def create_correlation_map(df):
+def create_correlation_map(df, cmap, annotation=True):
     '''Create heatmap for Pandas dataframe
 
     Parameters:
         df: Pandas dataframe
+        cmap: color map reference (https://matplotlib.org/stable/gallery/color/colormap_reference.html) (str)
+        annotation: whether to display annot or not (bool)
 
     Returns:
         None
@@ -75,7 +80,7 @@ def create_correlation_map(df):
     plt.figure(figsize=(15,12.5))
 
     # .corr heatmap of df to visualize correlation & show plot
-    sns.heatmap(round(df.corr(),1), annot=True, cmap='Purples', linewidth=0.9)
+    sns.heatmap(round(df.corr(),1), annot=annotation, cmap=cmap, linewidth=0.9)
     plt.show()
 
 
@@ -111,3 +116,6 @@ if __name__ == '__main__':
 
     '''
     pass
+    from data_import import *
+    df = import_merged_data()
+    create_correlation_map(df, 'bwr', annotation=False)
