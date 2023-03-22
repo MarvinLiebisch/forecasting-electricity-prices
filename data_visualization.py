@@ -7,6 +7,15 @@ import plotly.express as px
 
 
 def create_histogram(df):
+    '''Create histogram plot for Pandas dataframe
+
+    Parameters:
+        df: Pandas dataframe
+
+    Returns:
+        None
+
+    '''
     plt.figure(figsize=(15,50))
     columns = df.columns
     num_rows = len(columns)
@@ -18,6 +27,15 @@ def create_histogram(df):
     plt.show()
 
 def create_boxplot(df):
+    '''Create boxplot plot for Pandas dataframe
+
+    Parameters:
+        df: Pandas dataframe
+
+    Returns:
+        None
+
+    '''
     plt.figure(figsize=(15,50))
     columns = df.columns
     num_rows = len(columns)
@@ -27,15 +45,33 @@ def create_boxplot(df):
         plt.xlabel(columns[col])
     plt.show()
 
-def timeseries_price(df, column, title):
+def timeseries_price(df, column, unit, title):
+    '''Create timeseries chart for Pandas dataframe
+
+    Parameters:
+        df: Pandas dataframe, column, unit, title
+
+    Returns:
+        None
+
+    '''
     plt.figure(figsize=(18,8))
     plt.plot(df[column])
     plt.xlabel('hourly date')
-    plt.ylabel('euro/MWh')
+    plt.ylabel(unit)
     plt.title(title)
     plt.show()
 
 def create_correlation_map(df):
+    '''Create heatmap for Pandas dataframe
+
+    Parameters:
+        df: Pandas dataframe
+
+    Returns:
+        None
+
+    '''
     plt.figure(figsize=(15,12.5))
 
     # .corr heatmap of df to visualize correlation & show plot
@@ -44,6 +80,16 @@ def create_correlation_map(df):
 
 
 def create_price_per_total_load_chart(df):
+    '''Create scatter plot for price actual per total load
+    displayed per season chart
+
+    Parameters:
+        df: Pandas dataframe
+
+    Returns:
+        None
+
+    '''
     fig = px.scatter(df,x='total_load_actual',
                     y='price_actual',
                     facet_col='season',
@@ -60,26 +106,8 @@ def create_price_per_total_load_chart(df):
 
 
 if __name__ == '__main__':
-    from data_import import *
-    df = import_clean_energy_data()
-    # # create_histogram(df)
-    # create_boxplot(df)
-    # timeseries_price(df, 'price_actual', 'my title')
-    # create_correlation_map(df)
-    # Sort index
-    # df = df.sort_index()
+    '''
+    this is main function to test the codes above
 
-    # # Set conditional satements for filtering times of month to season value
-    # condition_winter = (df.index.month>=1)&(df.index.month<=3)
-    # condtion_spring = (df.index.month>=4)&(df.index.month<=6)
-    # condition_summer = (df.index.month>=7)&(df.index.month<=9)
-    # condition_automn = (df.index.month>=10)@(df.index.month<=12)
-
-    # # Create column in dataframe that inputs the season based on the conditions created above
-    # df['season'] = np.where(condition_winter,'winter',
-    #                         np.where(condtion_spring,'spring',
-    #                                 np.where(condition_summer,'summer',
-    #                                         np.where(condition_automn,'autumn',np.nan))))
-    # create_price_per_total_load_chart(df)
-    df2 = import_clean_weather_data()
-    print(df2.head())
+    '''
+    pass
