@@ -12,8 +12,8 @@ def import_data(dataset):
                 DataFrame
     '''
 
-    path = os.getcwd()
-    full_path = path + '/raw_data/' + dataset + '.csv'
+    path = os.path.dirname(os.getcwd())
+    full_path = path + '/forecasting-electricity-prices/raw_data/' + dataset + '.csv'
     print(f"Importing {dataset} data from {full_path}...")
     df_raw = pd.read_csv(full_path)
 
