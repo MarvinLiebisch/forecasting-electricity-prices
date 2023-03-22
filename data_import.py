@@ -1,6 +1,11 @@
 import pandas as pd
 import os
+import subprocess
 
+def get_git_root():
+    git_root = subprocess.Popen(['git', 'rev-parse', '--show-toplevel'], stdout=subprocess.PIPE)
+    stdout, _ = git_root.communicate()
+    return stdout.decode().strip()
 
 def import_data(dataset):
     '''Imports sepcified dataset fomr raw_data directory.
@@ -12,8 +17,10 @@ def import_data(dataset):
                 DataFrame
     '''
 
-    path = os.path.dirname(os.getcwd())
-    full_path = path + '/forecasting-electricity-prices/raw_data/' + dataset + '.csv'
+    
+    
+    git_root = get_git_root()
+    full_path = git_root + '/raw_data/' + dataset + '.csv'
     print(f"Importing {dataset} data from {full_path}...")
     df_raw = pd.read_csv(full_path)
 
