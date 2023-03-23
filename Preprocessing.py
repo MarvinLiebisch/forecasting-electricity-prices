@@ -4,8 +4,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, OneHotEncoder
 
 from data_import import import_merged_data
 
-def standardized_data(df, numerical_features=['price_actual',
-                                              'generation_fossil_hard_coal',
+def standardized_data(df, numerical_features=['generation_fossil_hard_coal',
                                               'generation_fossil_gas',
                                               'generation_fossil_brown_coal/lignite',
                                               'total_load_forecast',
@@ -13,8 +12,6 @@ def standardized_data(df, numerical_features=['price_actual',
                                               'generation_other_renewable',
                                               'generation_waste',
                                               'generation_fossil_oil',
-                                              'hour',
-                                              'month',
                                               'generation_hydro_run-of-river_and_poundage',
                                               'generation_wind_onshore',
                                               'forecast_wind_onshore_day_ahead',
@@ -47,8 +44,7 @@ def standardized_data(df, numerical_features=['price_actual',
 
 
 
-def normalize_dataset(df, numerical_features=['price_actual',
-                      'generation_fossil_hard_coal',
+def normalize_dataset(df, numerical_features=['generation_fossil_hard_coal',
                       'generation_fossil_gas',
                       'generation_fossil_brown_coal/lignite',
                       'total_load_forecast',
@@ -56,8 +52,6 @@ def normalize_dataset(df, numerical_features=['price_actual',
                       'generation_other_renewable',
                       'generation_waste',
                       'generation_fossil_oil',
-                      'hour',
-                      'month',
                       'generation_hydro_run-of-river_and_poundage',
                       'generation_wind_onshore',
                       'forecast_wind_onshore_day_ahead',
