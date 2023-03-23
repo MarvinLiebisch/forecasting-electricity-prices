@@ -1,6 +1,11 @@
 import pandas as pd
 import os
+import subprocess
 
+def get_git_root():
+    git_root = subprocess.Popen(['git', 'rev-parse', '--show-toplevel'], stdout=subprocess.PIPE)
+    stdout, _ = git_root.communicate()
+    return stdout.decode().strip()
 
 def import_data(dataset):
     '''Imports sepcified dataset fomr raw_data directory.
@@ -12,8 +17,8 @@ def import_data(dataset):
                 DataFrame
     '''
 
-    path = os.getcwd()
-    full_path = path + '/raw_data/' + dataset + '.csv'
+    git_root = get_git_root()
+    full_path = git_root + '/raw_data/' + dataset + '.csv'
     print(f"Importing {dataset} data from {full_path}...")
     df_raw = pd.read_csv(full_path)
 
@@ -29,6 +34,7 @@ def import_clean_energy_data(dropNA=True):
         Returns:
                 DataFrame
     '''
+
     df_energy = import_data('energy_dataset')
     df_energy['time'] = pd.to_datetime(df_energy['time'], utc=True)
     df_energy['time'] = df_energy['time'].dt.tz_convert('Europe/Madrid')
@@ -51,21 +57,24 @@ def import_clean_weather_data():
         Returns:
                 DataFrame
     '''
+
     df_weather = import_data('weather_features')
     df_weather['dt_iso'] = pd.to_datetime(df_weather['dt_iso'], utc=True)
+    df_weather['dt_iso'] = df_weather['dt_iso'].dt.tz_convert('Europe/Madrid')
     df_weather = df_weather.rename(columns={'dt_iso': 'time'})
     df_weather = df_weather.set_index('time')
 
     return df_weather
 
 
-def import_merged_data(FeatureEngineering = True, TempMin = False, TempMax = False, WeatherIcon = False):
+def import_merged_data(FeatureEngineering = False, TempMin = False, TempMax = False, WeatherIcon = False):
     '''Returns merged DataFrame containing the energy and weather data.
 
     Parameters:
-            FeatureEngineering (bool): Default is True
+            FeatureEngineering (bool): Default is False
             (Creates several time based features
-            e.g. season, month, day of week, weekend, hour)
+            e.g. season, month, day of week, weekend, hour
+            [only for machine learning models])
 
             TempMin, TempMax, WeatherIcon (bool): Default is False
             (Drops specified weather columns entirely)
@@ -117,4 +126,3 @@ def import_merged_data(FeatureEngineering = True, TempMin = False, TempMax = Fal
                                    .add_prefix(city.lower() + '_'))
 
     return df_merged
-
