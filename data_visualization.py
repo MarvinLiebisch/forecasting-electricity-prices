@@ -116,6 +116,3 @@ if __name__ == '__main__':
 
     '''
     pass
-    from data_import import *
-    df = import_merged_data()
-    create_correlation_map(df, 'bwr', annotation=False)
