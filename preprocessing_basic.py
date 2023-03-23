@@ -4,16 +4,8 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer, make_column_transformer, make_column_selector
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import OneHotEncoder
-from sklearn.preprocessing import FunctionTransformer
 
 from data_import import import_merged_data
-
-
-def sin_transformer(period):
-    return FunctionTransformer(lambda x: np.sin(x / period * 2 * np.pi))
-
-def cos_transformer(period):
-    return FunctionTransformer(lambda x: np.cos(x / period * 2 * np.pi))
 
 def run_pipeline(X, max_categories = 10, treat_remainder = 'drop'):
     ''' Runs provided features through preprocessing pipeline.
@@ -38,13 +30,7 @@ def run_pipeline(X, max_categories = 10, treat_remainder = 'drop'):
     column_transformer = ColumnTransformer(
         transformers=[
             ("numeric_min_max", min_max_scaler, make_column_selector(dtype_include=np.number)),
-            ("categorical", one_hot_encoder, features_categorical),
-            ("month_sin", sin_transformer(12), ["month"]),
-            ("month_cos", cos_transformer(12), ["month"]),
-            ("weekday_sin", sin_transformer(7), ["day_of_week"]),
-            ("weekday_cos", cos_transformer(7), ["day_of_week"]),
-            ("hour_sin", sin_transformer(24), ["hour"]),
-            ("hour_cos", cos_transformer(24), ["hour"]),
+            ("categorical", one_hot_encoder, features_categorical)
         ],
         remainder = treat_remainder)
 
