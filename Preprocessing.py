@@ -2,7 +2,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, OneHotEncoder
 
 
-from data_import import import_merged_data
+from energy_price_predictions.ml_logic.data_import import import_merged_data
 
 def standardized_data(df, numerical_features=['generation_fossil_hard_coal',
                                               'generation_fossil_gas',
@@ -15,7 +15,7 @@ def standardized_data(df, numerical_features=['generation_fossil_hard_coal',
                                               'generation_hydro_run-of-river_and_poundage',
                                               'generation_wind_onshore',
                                               'forecast_wind_onshore_day_ahead',
-                                              'generation_hydro_pumped_storage_consumption']
+                                              'generation_hydro_pumped_storage_consumption'],
                     categorical_features=[],
                     target_variable ='price_day_ahead'):
     """
