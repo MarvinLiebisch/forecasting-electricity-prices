@@ -1,6 +1,11 @@
 import streamlit as st
+import pandas as pd
+import numpy as np
+
 from energy_price_predictions.ml_logic.data_import import *
 from energy_price_predictions.ml_logic.visualization import *
+
+
 
 '''
 # Energy price predictions
@@ -8,24 +13,11 @@ from energy_price_predictions.ml_logic.visualization import *
 
 st.markdown('Visualization')
 
-df =import_merged_data()
-create_histogram(df)
-import numpy as np
-import plotly.figure_factory as ff
+df = import_merged_data()
 
-# Add histogram data
-x1 = np.random.randn(200) - 2
-x2 = np.random.randn(200)
-x3 = np.random.randn(200) + 2
+fig = plt.figure(figsize=(15,12.5))
 
-# Group data together
-hist_data = [x1, x2, x3]
+# .corr heatmap of df to visualize correlation & show plot
+sns.heatmap(round(df.corr(),1), annot=False, cmap='Purples', linewidth=0.9)
 
-group_labels = ['Group 1', 'Group 2', 'Group 3']
-
-# Create distplot with custom bin_size
-fig = ff.create_distplot(
-        hist_data, group_labels, bin_size=[.1, .25, .5])
-
-# Plot!
-st.plotly_chart(fig, use_container_width=True)
+st.pyplot(fig)
