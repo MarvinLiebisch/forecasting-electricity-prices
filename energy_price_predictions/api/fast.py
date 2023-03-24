@@ -36,4 +36,4 @@ def predict():
 
 @app.get("/")
 def root():
-    return {'greeting': 'Hello'}
+    return {'greeting': 'Haii...can not predict electricity price right now. Our team are working to finish the model first.Cheeeerss'}
