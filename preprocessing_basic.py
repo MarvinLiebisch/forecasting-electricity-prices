@@ -5,7 +5,7 @@ from sklearn.compose import ColumnTransformer, make_column_transformer, make_col
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import OneHotEncoder
 
-from data_import import import_merged_data
+from energy_price_predictions.ml_logic.data_import import import_merged_data
 
 def run_pipeline(X, max_categories = 10, treat_remainder = 'drop'):
     ''' Runs provided features through preprocessing pipeline.
