@@ -17,7 +17,7 @@ def standardized_data(df, numerical_features=['generation_fossil_hard_coal',
                                               'forecast_wind_onshore_day_ahead',
                                               'generation_hydro_pumped_storage_consumption'],
                     categorical_features=[],
-                    target_variable='price_day_ahead'):
+                    target_variable ='price_day_ahead'):
     """
     Perform preprocessing on the input data using StandardScaler for numerical features
     and OneHotEncoder for categorical features. Returns the preprocessed data and target variable.
