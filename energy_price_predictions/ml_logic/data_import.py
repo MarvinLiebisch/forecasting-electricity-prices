@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import subprocess
+import streamlit as st
 
 def get_git_root():
     git_root = subprocess.Popen(['git', 'rev-parse', '--show-toplevel'], stdout=subprocess.PIPE)
@@ -66,7 +67,7 @@ def import_clean_weather_data():
 
     return df_weather
 
-
+@st.cache
 def import_merged_data(FeatureEngineering = False, TempMin = False, TempMax = False, WeatherIcon = False):
     '''Returns merged DataFrame containing the energy and weather data.
 
