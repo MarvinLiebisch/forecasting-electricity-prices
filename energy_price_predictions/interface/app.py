@@ -33,8 +33,19 @@ currency = st.sidebar.selectbox('Select price currency',
      'Norwegian Krone', 'Denmark Krone']
 )
 
+selected_hour = st.sidebar.selectbox('Select hour',
+    ['all'] + [f'{i} am' for i in range(0,12)] + [f'{i} pm' for i in range(12,24)]
+)
+
+
 # Retrieve data
 df = import_merged_data().reset_index()
+
+# Filter based on selected hour
+if selected_hour != 'all':
+    hour_value = int(selected_hour.split(' ')[0])
+    df = df[df['time'].dt.hour == hour_value]
+
 df['price_day_ahead'] = RATE[currency] * df['price_day_ahead']
 # Load model
 model = load_model('gru_model.h5')
@@ -65,11 +76,11 @@ xaxis=dict(
     zeroline=False,
     rangeselector=dict(
         buttons=list([
-            dict(count=1, label="1m", step="month", stepmode="backward"),
-            dict(count=3, label="3m", step="month", stepmode="backward"),
-            dict(count=6, label="6m", step="month", stepmode="backward"),
-            dict(count=1, label="YTD", step="year", stepmode="todate"),
-            dict(count=1, label="1y", step="year", stepmode="backward"),
+            dict(count=24, label="24 hour", step="hour", stepmode="backward"),
+            dict(count=3, label="3 days", step="day", stepmode="backward"),
+            dict(count=7, label="1 week", step="day", stepmode="backward"),
+            dict(count=1, label="1 month", step="month", stepmode="backward"),
+            dict(count=1, label="1 year", step="year", stepmode="backward"),
             dict(step="all"),
         ])
     )
