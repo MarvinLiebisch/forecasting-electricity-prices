@@ -1,6 +1,8 @@
 import pandas as pd
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime, timedelta
+import numpy as np
 
 app = FastAPI()
 
@@ -18,20 +20,23 @@ app.add_middleware(
 
 # http://127.0.0.1:8000/predict?...
 @app.get("/predict")
-def predict():
+def predict(start_date, prediction_interval):
     """
     Make a single course prediction.
     """
     # create pd dataframe from parameters
+    start_time = datetime.strptime(f'{str(start_date)} 00:00:00+01:00', '%Y-%m-%d %H:%M:%S%z')
 
     # preprocess pd dataframe
 
     # predict dgn model
-    predict = 20
-
-    return {
-        'price_day_ahead': predict,
-    }
+    # data simulation
+    if prediction_interval == 'Hourly':
+        future_df = pd.DataFrame({
+            'time': np.array([start_time + timedelta(hours=i) for i in range(24)]),
+            'price_day_ahead': [50 + np.random.random()*20 for i in range(24)] # derived from API
+        })
+    return future_df.to_dict()
 
 
 @app.get("/")
