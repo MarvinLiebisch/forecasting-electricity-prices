@@ -38,7 +38,6 @@ df = import_merged_data().reset_index()
 df['price_day_ahead'] = RATE[currency] * df['price_day_ahead']
 # Load model
 model = load_model('gru_model.h5')
-print(model.summary())
 
 # Retrieve prediction
 ## Preprocessing data
