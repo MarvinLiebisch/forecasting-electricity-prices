@@ -1,4 +1,3 @@
-
 import streamlit as st
 import requests
 import pandas as pd
@@ -227,6 +226,44 @@ xaxis_rangeselector_bgcolor='silver'
 #fig = plot2(dict_of_hourly_df[hour][-30:], hour)
 st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
+st.text("")
+st.markdown("***")
+st.text("")
+
+
+'''
+### :mailbox: Subscribe to our mailing list to receive updates and daily price information!
+
+'''
+
+
+contact_form = """
+<form action="https://formsubmit.co/YOUREMAIL@EMAIL.COM" method="POST">
+     <input type="hidden" name="_captcha" value="false">
+     <input type="text" name="name" placeholder="Your name" required>
+     <input type="email" name="email" placeholder="Your email" required>
+     <button type="submit">Send</button>
+</form>
+"""
+
+st.markdown(contact_form, unsafe_allow_html=True)
+
+st.text("")
+st.markdown("***")
+st.text("")
+
+'''
+### Disclaimer
+
+"The information provided on this website is for educational and informational purposes only.
+It is not intended to be and does not constitute financial advice.
+NeuralEnergy does not make any representations or warranties about the accuracy or
+completeness of the information provided on this website.
+Any reliance you place on the information is strictly at your own risk.
+NeuralEnergy will not be liable for any losses or damages in connection
+with the use of this website or the information contained herein."
+
+'''
 
 
 # def plot_2(df, hour):
