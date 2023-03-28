@@ -67,7 +67,7 @@ def import_clean_weather_data():
 
     return df_weather
 
-@st.cache
+
 def import_merged_data(FeatureEngineering = False, TempMin = False, TempMax = False, WeatherIcon = False):
     '''Returns merged DataFrame containing the energy and weather data.
 
@@ -127,3 +127,8 @@ def import_merged_data(FeatureEngineering = False, TempMin = False, TempMax = Fa
                                    .add_prefix(city.lower() + '_'))
 
     return df_merged
+
+
+@st.cache
+def import_merged_data_cache():
+    return import_merged_data()

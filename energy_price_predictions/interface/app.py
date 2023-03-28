@@ -9,7 +9,8 @@ import json
 from energy_price_predictions.ml_logic.data_import import *
 from energy_price_predictions.ml_logic.visualization import *
 from energy_price_predictions.ml_logic.model import *
-# from energy_price_predictions.ml_logic.preprocessing import *
+from energy_price_predictions.ml_logic.registry import *
+from energy_price_predictions.ml_logic.preprocessing import *
 
 #API_URL = "https://electricitypricepredictions-nrgmmiocwa-ew.a.run.app/predict"
 RATE = {
@@ -39,7 +40,7 @@ selected_hour = st.sidebar.selectbox('Select hour',
 
 
 # Retrieve data
-df = import_merged_data().reset_index()
+df = import_merged_data_cache().reset_index()
 
 # Filter based on selected hour
 if selected_hour != 'all':
@@ -48,7 +49,8 @@ if selected_hour != 'all':
 
 df['price_day_ahead'] = RATE[currency] * df['price_day_ahead']
 # Load model
-model = load_model('gru_model.h5')
+model = load_model_from_mlflow()
+print(model.summary())
 
 # Retrieve prediction
 ## Preprocessing data
