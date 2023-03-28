@@ -26,7 +26,7 @@ st.set_page_config(page_title="Electricy Price Prediction", layout="wide") #page
 
 st.markdown('# Electricity Price Prediction')
 
-st.sidebar.markdown("# Input Parameters")
+#st.sidebar.markdown("# Input Parameters")
 
 
 currency = st.sidebar.selectbox('Select price currency',
@@ -125,10 +125,18 @@ newnames = {
     'price_day_ahead': 'Real price',
     'price_day_ahead_predicted': 'Predicted price',
 }
+colors = {
+    'price_day_ahead': 'white',
+    'price_day_ahead_predicted': 'green',
+}
+line_width = {
+    'price_day_ahead': 1,
+    'price_day_ahead_predicted': 1.5,
+}
 fig.for_each_trace(lambda t: t.update(name = newnames[t.name],
                                       legendgroup = newnames[t.name],
                                       hovertemplate = t.hovertemplate.replace(t.name, newnames[t.name]),
-                                      line = dict(width=1),
+                                      line = dict(color=colors[t.name], width=line_width[t.name]),
                                      )
                   )
 
