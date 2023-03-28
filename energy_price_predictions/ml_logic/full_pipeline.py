@@ -9,8 +9,7 @@ from tensorflow import keras
 from keras.models import Sequential
 from keras.layers import Dense, SimpleRNN
 
-
-from data_import import import_merged_data
+from energy_price_predictions.ml_logic.data_import import import_merged_data
 
 
 def sin_transformer(period):
@@ -128,6 +127,8 @@ def run_pipeline(df, numerical_scaler = "min_max_scaler", time_features = True,
 
     # Return the model pipeline
     return model_pipeline
+
+    # model_pipeline.fit(X)
 
 
 df = import_merged_data()

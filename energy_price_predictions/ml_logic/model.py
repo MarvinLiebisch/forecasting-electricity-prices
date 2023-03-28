@@ -53,7 +53,7 @@ from energy_price_predictions.ml_logic.registry import load_model
 #     return X_train, X_val, X_test, y_train, y_val,y_test
 
 
-def initialize_model(input_shape: tuple, output_shape: tuple) -> Model:
+def initialize_model(input_shape, output_shape=24) -> Model:
     """
     Initialize the Neural Network with random weights
     """
@@ -63,7 +63,10 @@ def initialize_model(input_shape: tuple, output_shape: tuple) -> Model:
     model.add(layers.LSTM(units=64, return_sequences=True))
     model.add(layers.LSTM(units=64, return_sequences=False))
     model.add(layers.Dense(output_shape, activation='linear'))  # Output layer with 24 neurons (one for each hour)
-
+    # model = Sequential([
+    #     layers.SimpleRNN(units=64, input_shape=(None, input_shape), return_sequences=True),
+    #     layers.Dense(24, activation='linear')
+    # ])
     return model
 
 

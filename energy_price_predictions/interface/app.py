@@ -5,6 +5,8 @@ from datetime import datetime, date, timedelta
 import plotly.express as px
 import requests
 import json
+import subprocess
+import sys
 
 from energy_price_predictions.ml_logic.data_import import *
 from energy_price_predictions.ml_logic.visualization import *
@@ -40,7 +42,8 @@ selected_hour = st.sidebar.selectbox('Select hour',
 
 
 # Retrieve data
-df = import_merged_data_cache().reset_index()
+data = import_merged_data_cache()
+df = data.reset_index()
 
 # Filter based on selected hour
 if selected_hour != 'all':
@@ -130,8 +133,8 @@ colors = {
     'price_day_ahead_predicted': 'green',
 }
 line_width = {
-    'price_day_ahead': 1,
-    'price_day_ahead_predicted': 1.5,
+    'price_day_ahead': 0.5,
+    'price_day_ahead_predicted': 1,
 }
 fig.for_each_trace(lambda t: t.update(name = newnames[t.name],
                                       legendgroup = newnames[t.name],
@@ -160,3 +163,101 @@ with col4:
     # dummy
     tomorrow_highest = 70.1 * RATE[currency]
     st.metric('Highest Price Prediction (24 hr)', round(tomorrow_highest,1), f'{round((tomorrow_highest/current-1)*100, 1)} %')
+
+
+
+
+'''
+#
+#
+#
+### Simple moving average over historical day ahead price
+'''
+
+def load_data():
+    df = data
+    df_price = df[['price_day_ahead']]
+    df_price['hour'] = df_price.index.hour+1
+    df_price['7D_SMA'] = df_price['price_day_ahead'].rolling(24*7).mean()
+    df_price['30D_SMA'] = df_price['price_day_ahead'].rolling(24*30).mean()
+    df_price.dropna(inplace=True)
+
+    dict_of_hourly_df = {}
+    for i in range(24):
+        key_name = i+1
+        df_new = df_price[['price_day_ahead']][df_price['hour'] == i+1]
+        df_new['30D_SMA'] = df_new['price_day_ahead'].rolling(30).mean()
+        df_new['14D_SMA'] = df_new['price_day_ahead'].rolling(14).mean()
+        df_new['7D_SMA'] = df_new['price_day_ahead'].rolling(7).mean()
+        df_new['3D_SMA'] = df_new['price_day_ahead'].rolling(3).mean()
+        df_new.dropna(inplace=True)
+        dict_of_hourly_df[key_name] = df_new
+
+    return df_price, dict_of_hourly_df
+
+
+df_price, dict_of_hourly_df = load_data()
+
+def plot_1(df_price):
+    fig = px.line(df_price, x=df_price.index, y=['price_day_ahead', '30D_SMA'], color_discrete_sequence=['rgba(200, 200, 200, 0.1)',
+                                                                                                        'rgba(255, 255, 255, 1)'])
+
+
+    fig = fig.update_layout(legend=dict(
+        yanchor="top",
+        y=0.99,
+        xanchor="left",
+        x=0.01
+    ))
+
+    newnames = {'30D_SMA':'30D SMA', 'price_day_ahead': 'Hourly Price'}
+    fig.for_each_trace(lambda t: t.update(name = newnames[t.name],
+                                        legendgroup = newnames[t.name],
+                                        hovertemplate = t.hovertemplate.replace(t.name, newnames[t.name])
+                                        )
+                    )
+
+    fig.update_layout(
+        yaxis_title="Price",
+        legend_title=None,
+        font=dict(
+            family="Arial",
+            size=12,
+            color="white"
+        )
+    )
+
+    xaxis=dict(
+        title=None,
+        showgrid=False,
+        showline=False,
+        zeroline=False,
+
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1, label="1 month", step="month", stepmode="backward"),
+                dict(count=3, label="3 month", step="month", stepmode="backward"),
+                dict(count=6, label="6 month", step="month", stepmode="backward"),
+                dict(count=1, label="Year To Date", step="year", stepmode="todate"),
+                dict(count=1, label="1 year", step="year", stepmode="backward"),
+                dict(step="all")
+            ])
+        )
+    )
+
+    fig.update_layout(
+    xaxis=xaxis,
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)',
+    template='plotly_dark',
+    xaxis_rangeselector_font_color='black',
+    xaxis_rangeselector_activecolor='gray',
+    xaxis_rangeselector_bgcolor='silver'
+    )
+
+
+
+    return fig
+
+fig2 = plot_1(df_price)
+st.plotly_chart(fig2, theme="streamlit", use_container_width=True)

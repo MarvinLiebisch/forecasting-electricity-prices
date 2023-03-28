@@ -14,6 +14,7 @@ setup(name='energy_price_predictions',
       #url="https://github.com/lewagon/taxi-fare",
       install_requires=requirements,
       packages=find_packages(),
+    #   package_data=['raw_data/*.csv'],
       test_suite="tests",
       # include_package_data: to install data from MANIFEST.in
       include_package_data=True,
