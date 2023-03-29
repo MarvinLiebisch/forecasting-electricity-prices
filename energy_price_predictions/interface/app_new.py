@@ -151,11 +151,15 @@ with col1:
     st.write(' ')
 
 with col2:
-    st.image("https://i.ibb.co/1RGqJKL/Neural-Energy-white-on-streamlit.png", width=300)
+    st.image("https://i.ibb.co/1RGqJKL/Neural-Energy-white-on-streamlit.png", width=200)
 
 with col3:
     st.write(' ')
 ####
+'''
+#
+#
+'''
 st.markdown('# Electricity Price Prediction :zap:')
 
 # Retrieve data
