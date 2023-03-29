@@ -132,3 +132,14 @@ def import_merged_data(FeatureEngineering = False, TempMin = False, TempMax = Fa
 @st.cache(allow_output_mutation=True)
 def import_merged_data_cache():
     return import_merged_data()
+
+@st.cache(allow_output_mutation=True)
+def import_final_result_cache():
+    git_root = get_git_root()
+    full_path = git_root + '/streamlit_data/data_for_streamlit.csv'
+    print(f"Importing data from {full_path}...")
+    df_raw = pd.read_csv(full_path)
+    df_raw.columns = ['time', 'price_day_ahead', 'price_day_ahead_prediction']
+    df_raw['time'] = pd.to_datetime(df_raw['time'], errors='coerce')
+    df_raw = df_raw.set_index('time')
+    return df_raw

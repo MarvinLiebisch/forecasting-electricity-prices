@@ -9,8 +9,6 @@ import subprocess
 import sys
 
 from energy_price_predictions.ml_logic.data_import import *
-from energy_price_predictions.ml_logic.visualization import *
-from energy_price_predictions.ml_logic.model import *
 from energy_price_predictions.ml_logic.registry import *
 from energy_price_predictions.ml_logic.preprocessing_prod import *
 
@@ -163,8 +161,7 @@ with col3:
 st.markdown('# Electricity Price Prediction :zap:')
 
 # Retrieve data
-data = import_merged_data_cache()
-print(data.shape)
+data = import_final_result_cache()
 df = data.reset_index()
 y = data[['price_day_ahead']]
 
