@@ -27,7 +27,7 @@ RATE = {
 
 st.set_page_config(page_title="Electricy Price Prediction", layout="wide") #page_icon=img,
 
-st.markdown('# Electricity Price Prediction')
+st.markdown('# Electricity Price Prediction :zap:')
 
 #st.sidebar.markdown("# Input Parameters")
 
@@ -53,7 +53,10 @@ if selected_hour != 'all':
     df = df[df['time'].dt.hour == hour_value]
 
 df['price_day_ahead'] = RATE[currency] * df['price_day_ahead']
-df['30D_SMA'] = df['price_day_ahead'].rolling(24*30).mean()
+if selected_hour == 'all':
+    df['30D_SMA'] = df['price_day_ahead'].rolling(24*30).mean()
+else:
+    df['30D_SMA'] = df['price_day_ahead'].rolling(30).mean()
 
 # preprocess data
 preprocessor  = run_pipeline(data)
@@ -167,7 +170,42 @@ with col4:
     st.metric('Highest Price Prediction (24 hr)', round(tomorrow_highest,1), f'{round((tomorrow_highest/current-1)*100, 1)} %')
 
 
+st.sidebar.text("")
+st.sidebar.markdown("***")
+st.sidebar.text("")
 
+st.sidebar.markdown(
+'''
+### :mailbox: Subscribe to our mailing list to receive updates and daily price information!
+'''
+)
+
+
+contact_form = """
+<form action="https://formsubmit.co/YOUREMAIL@EMAIL.COM" method="POST">
+     <input type="hidden" name="_captcha" value="false">
+     <input type="text" name="name" placeholder="Your name" required>
+     <input type="email" name="email" placeholder="Your email" required>
+     <button type="submit">Send</button>
+</form>
+"""
+
+st.sidebar.markdown(contact_form, unsafe_allow_html=True)
+
+st.text("")
+st.markdown("***")
+st.text("")
+
+'''
+##### Disclaimer
+"The information provided on this website is for educational and informational purposes only.
+It is not intended to be and does not constitute financial advice.
+NeuralEnergy does not make any representations or warranties about the accuracy or
+completeness of the information provided on this website.
+Any reliance you place on the information is strictly at your own risk.
+NeuralEnergy will not be liable for any losses or damages in connection
+with the use of this website or the information contained herein."
+'''
 
 # '''
 # #

@@ -14,4 +14,4 @@ COPY setup.py /setup.py
 RUN pip install -e .
 
 #CMD uvicorn energy_price_predictions.api.fast:app --reload --host 0.0.0.0 --port $PORT
-CMD streamlit run energy_price_predictions/interface/app.py --server.port 8080
+CMD streamlit run energy_price_predictions/interface/app.py --server.port 8080 --server.enableCORS=false
