@@ -141,6 +141,8 @@ def create_plot_hourly(df, colors, columns, width):
     fig.for_each_trace(lambda t: t.update(line = dict(color=colors_[t.name], width=line_width[t.name])))
     return fig
 
+### START ###
+# ==================
 
 st.set_page_config(page_title="Electricy Price Prediction") #page_icon=img,
 ### Add our logo to the top of the page
