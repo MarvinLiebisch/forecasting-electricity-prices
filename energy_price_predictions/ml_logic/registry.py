@@ -3,6 +3,7 @@ import os
 import time
 import pickle
 from tensorflow import keras
+from tensorflow.keras import models
 import streamlit as st
 import mlflow
 from mlflow.tracking import MlflowClient
@@ -13,8 +14,11 @@ MLFLOW_EXPERIMENT = "electricitypriceprediction_experiment"
 
 
 @st.cache(allow_output_mutation=True)
-def load_model_from_mlflow():
-    model = load_model()
+def load_model_cache(source='local'):
+    if source == 'mlflow':
+        model = load_model()
+    elif source == 'local':
+        model = models.load_model(f'models/electricitypriceprediction.h5')
     print(model.summary())
     return model
 

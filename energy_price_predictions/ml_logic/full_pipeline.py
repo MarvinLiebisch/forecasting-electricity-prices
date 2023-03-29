@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import streamlit as st
+import random
 
 from sklearn.compose import ColumnTransformer, make_column_transformer, make_column_selector
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, OneHotEncoder, FunctionTransformer
@@ -130,9 +132,30 @@ def run_pipeline(df, numerical_scaler = "min_max_scaler", time_features = True,
 
     # model_pipeline.fit(X)
 
+@st.cache(allow_output_mutation=True)
+def get_preprocessed_data(dataframe, y):
+    n_observation_X = 24 * 7*4  # For example, a week of data for the sequence
+    n_observation_y = 24 # We would like to forecast the 24 prices of the next day during the auction of today
+    n_sequence = 200
+    preprocessor  = run_pipeline(dataframe)
+    print(preprocessor)
+    X_preprocessed = pd.DataFrame(preprocessor.fit_transform(dataframe))
+    sample_list = list(range(0, len(X_preprocessed)))
+    X__=np.zeros((n_sequence, n_observation_X, dataframe.shape[1]))
+    y__=np.zeros((n_sequence, n_observation_y, 1))
+    def create_sequence(X_,y_,sample_list,n_sequence):
+        index=0
+        for i in sample_list[0:n_sequence]:
+            X_[index] = X_preprocessed.iloc[i:i + n_observation_X].values
+            y_[index]= y.iloc[i + n_observation_X:i + n_observation_X + n_observation_y].values
+            index=index+1
+        return X_, y_
+    return create_sequence(X__, y__, sample_list, n_sequence)
 
-df = import_merged_data()
 
-# Train the RNN pipeline on your data
-model = run_pipeline(df)
-print(model)
+if __name__ == "__main__":
+    df = import_merged_data()
+
+    # Train the RNN pipeline on your data
+    model = run_pipeline(df)
+    print(model)

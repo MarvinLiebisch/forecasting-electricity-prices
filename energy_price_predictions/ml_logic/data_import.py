@@ -129,6 +129,6 @@ def import_merged_data(FeatureEngineering = False, TempMin = False, TempMax = Fa
     return df_merged
 
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def import_merged_data_cache():
     return import_merged_data()

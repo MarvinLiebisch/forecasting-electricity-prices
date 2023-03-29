@@ -7,6 +7,71 @@ import numpy as np
 import pandas as pd
 import math
 import random
+import streamlit as st
+
+
+def sequence_data(X, y,
+                  n_observation_X, n_observation_y,
+                  n_sequence_train,n_sequence_val,n_sequence_test,
+                  val_cutoff,test_cutoff):
+
+
+    sample_list_train = list(range(0, int(len(X)*val_cutoff-n_observation_y-n_observation_X)))
+    sample_list_val = list(range(int(len(X)*val_cutoff),int(len(X)*test_cutoff)))
+    sample_list_test= list(range(int(len(X)*test_cutoff),int(len(X)-n_observation_y-n_observation_X)))
+
+    random.shuffle(sample_list_train)
+    random.shuffle(sample_list_val)
+    random.shuffle(sample_list_test)
+
+    X_train=np.zeros((n_sequence_train, n_observation_X, X.shape[1]))
+    X_val=np.zeros((n_sequence_val, n_observation_X, X.shape[1]))
+    X_test=np.zeros((n_sequence_test, n_observation_X, X.shape[1]))
+
+    y_train=np.zeros((n_sequence_train, n_observation_y, 1))
+    y_val=np.zeros((n_sequence_val, n_observation_y, 1))
+    y_test=np.zeros((n_sequence_test, n_observation_y, 1))
+
+
+    def create_sequence(X_,y_,sample_list,n_sequence):
+        index=0
+        for i in sample_list[0:n_sequence]:
+            X_[index] = X.iloc[i:i + n_observation_X].values
+            y_[index]= y.iloc[i + n_observation_X:i + n_observation_X + n_observation_y].values
+            index=index+1
+        return X_, y_
+
+    X_train, y_train = create_sequence(X_train,y_train,sample_list_train,n_sequence_train)
+    X_val, y_val = create_sequence(X_val,y_val,sample_list_val,n_sequence_val)
+    X_test, y_test = create_sequence(X_test,y_test,sample_list_test,n_sequence_test)
+
+    return X_train, X_val, X_test, y_train, y_val,y_test
+
+@st.cache
+def sequence_data_predict(X, y,
+                  n_observation_X, n_observation_y,
+                  n_sequence_train):
+
+
+    sample_list_train = list(range(0, int(len(X)-n_observation_y-n_observation_X)))
+
+    X_train=np.zeros((n_sequence_train, n_observation_X, X.shape[1]))
+
+    y_train=np.zeros((n_sequence_train, n_observation_y, 1))
+
+
+    def create_sequence(X_,y_,sample_list,n_sequence):
+        index=0
+        for i in sample_list[0:n_sequence]:
+            X_[index] = X.iloc[i:i + n_observation_X].values
+            y_[index]= y.iloc[i + n_observation_X:i + n_observation_X + n_observation_y].values
+            index=index+1
+        return X_, y_
+
+    X_train, y_train = create_sequence(X_train,y_train,sample_list_train,n_sequence_train)
+
+    return X_train, y_train
+
 
 def sin_transformer(period):
     return FunctionTransformer(lambda x: np.sin(x / period * 2 * np.pi))
