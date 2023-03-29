@@ -107,4 +107,4 @@ def update_clean_data(api_key, country_code):
                  {(today+timedelta(-1)).strftime('%d-%m-%y')} imported and saved to filtered_data.csv.""")
 
 
-update_clean_data("4bbc4d85-7bc2-4066-8c71-5bcc9740e6a1", "ES")
+#update_clean_data("API KEY HERE", "ES")
