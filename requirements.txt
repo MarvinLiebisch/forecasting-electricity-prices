@@ -8,5 +8,7 @@ scikit-learn==1.1.2
 tensorflow==2.10.0
 plotly==5.9.0
 streamlit==1.11.1
+entsoe==0.5.9
 uvicorn==0.21.1
 fastapi==0.95.0
+
