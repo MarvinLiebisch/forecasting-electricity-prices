@@ -12,7 +12,8 @@ from energy_price_predictions.ml_logic.data_import import import_merged_data
 
 
 def standardization(df, feature_to_shift='price_day_ahead', shift_value=24,
-                    numerical_features=['generation_fossil_hard_coal',
+                    numerical_features=['price_day_ahead',
+                                        'generation_fossil_hard_coal',
                                         'generation_fossil_gas',
                                         'generation_fossil_brown_coal/lignite',
                                         'total_load_forecast',
@@ -27,11 +28,14 @@ def standardization(df, feature_to_shift='price_day_ahead', shift_value=24,
                     categorical_features=[]):
 
     # Shift the target variable
-    df['y'] = df[feature_to_shift].shift(-shift_value)
+    df['price_day_ahead_shifted'] = df[feature_to_shift].shift(shift_value)
+
+    # Drop rows with NaN values
+    df.dropna(inplace=True)
 
     # standardization of numerical values
     scaler = StandardScaler()
-    df[numerical_features + [feature_to_shift]] = scaler.fit_transform(df[numerical_features + [feature_to_shift]])
+    df[numerical_features + ['price_day_ahead_shifted']] = scaler.fit_transform(df[numerical_features + ['price_day_ahead_shifted']])
 
     # cyclical values
     df['hour_sin'] = np.sin(2 * np.pi * df.index.hour / 24)
@@ -47,7 +51,7 @@ def standardization(df, feature_to_shift='price_day_ahead', shift_value=24,
     else:
         X = df[numerical_features + ['hour_sin', 'hour_cos', 'day_of_week_sin', 'day_of_week_cos', 'day_of_year_sin', 'day_of_year_cos']]
 
-    y = df['y']
+    y = df['price_day_ahead_shifted']
 
     return X, y
 # you can call this function like this
@@ -59,7 +63,8 @@ def standardization(df, feature_to_shift='price_day_ahead', shift_value=24,
 
 
 def normalization(df, feature_to_shift='price_day_ahead', shift_value=24,
-                    numerical_features=['generation_fossil_hard_coal',
+                    numerical_features=['price_day_ahead',
+                                        'generation_fossil_hard_coal',
                                         'generation_fossil_gas',
                                         'generation_fossil_brown_coal/lignite',
                                         'total_load_forecast',
@@ -74,7 +79,10 @@ def normalization(df, feature_to_shift='price_day_ahead', shift_value=24,
                     categorical_features=[]):
 
     # Shift the target variable
-    df['y'] = df[feature_to_shift].shift(-shift_value)
+    df['price_day_ahead_shifted'] = df[feature_to_shift].shift(shift_value)
+
+    # Drop rows with NaN values
+    df.dropna(inplace=True)
 
     # normalization of numerical values
     scaler = MinMaxScaler()
@@ -94,7 +102,7 @@ def normalization(df, feature_to_shift='price_day_ahead', shift_value=24,
     else:
         X = df[numerical_features + ['hour_sin', 'hour_cos', 'day_of_week_sin', 'day_of_week_cos', 'day_of_year_sin', 'day_of_year_cos']]
 
-    y = df['y']
+    y = df['price_day_ahead_shifted']
 
     return X, y
 #  you can call the normalization function like this
@@ -303,43 +311,43 @@ def normalization(df, feature_to_shift='price_day_ahead', shift_value=24,
 
 
 
-def normalize_dataset(df, numerical_features=['generation_fossil_hard_coal',
-                      'generation_fossil_gas',
-                      'generation_fossil_brown_coal/lignite',
-                      'total_load_forecast',
-                      'total_load_actual',
-                      'generation_other_renewable',
-                      'generation_waste',
-                      'generation_fossil_oil',
-                      'generation_hydro_run-of-river_and_poundage',
-                      'generation_wind_onshore',
-                      'forecast_wind_onshore_day_ahead',
-                      'generation_hydro_pumped_storage_consumption'],
-                    categorical_features=[],
-                    target_variable='price_day_ahead'):
-    """
-    Perform preprocessing on the input data using MinMaxScaler for numerical features
-    and OneHotEncoder for categorical features. Returns the preprocessed data and target variable.
+# def normalize_dataset(df, numerical_features=['generation_fossil_hard_coal',
+#                       'generation_fossil_gas',
+#                       'generation_fossil_brown_coal/lignite',
+#                       'total_load_forecast',
+#                       'total_load_actual',
+#                       'generation_other_renewable',
+#                       'generation_waste',
+#                       'generation_fossil_oil',
+#                       'generation_hydro_run-of-river_and_poundage',
+#                       'generation_wind_onshore',
+#                       'forecast_wind_onshore_day_ahead',
+#                       'generation_hydro_pumped_storage_consumption'],
+#                     categorical_features=[],
+#                     target_variable='price_day_ahead'):
+#     """
+#     Perform preprocessing on the input data using MinMaxScaler for numerical features
+#     and OneHotEncoder for categorical features. Returns the preprocessed data and target variable.
 
-    Parameters:
-        df (pd.DataFrame): The input dataframe
-        numerical_features (list): A list of numerical feature names
-        categorical_features (list): A list of categorical feature names
-        target_variable (str): The name of the target variable column
+#     Parameters:
+#         df (pd.DataFrame): The input dataframe
+#         numerical_features (list): A list of numerical feature names
+#         categorical_features (list): A list of categorical feature names
+#         target_variable (str): The name of the target variable column
 
-    Returns:
-        X (np.array): The preprocessed data
-        y (np.array): The target variable
-    """
-    preprocessing = ColumnTransformer(transformers=[
-        ('num', MinMaxScaler(), numerical_features),
-        ('cat', OneHotEncoder(), categorical_features)
-    ])
+#     Returns:
+#         X (np.array): The preprocessed data
+#         y (np.array): The target variable
+#     """
+#     preprocessing = ColumnTransformer(transformers=[
+#         ('num', MinMaxScaler(), numerical_features),
+#         ('cat', OneHotEncoder(), categorical_features)
+#     ])
 
-    X = preprocessing.fit_transform(df.drop(target_variable, axis=1))
-    y = df[target_variable]
+#     X = preprocessing.fit_transform(df.drop(target_variable, axis=1))
+#     y = df[target_variable]
 
-    return X, y
+#     return X, y
 
 # you can call the function like this:
 # X, y = normalize_dataset(df)

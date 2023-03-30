@@ -1,5 +1,8 @@
+#Initialization of the model
+
+
 from energy_price_predictions.ml_logic.data_import import import_merged_data
-from energy_price_predictions.ml_logic.preprocessing import normalize_dataset
+from energy_price_predictions.ml_logic.preprocessing_prod import run_pipeline
 from tensorflow.keras.models import Sequential
 from tensorflow.keras import layers
 from tensorflow.keras.layers import SimpleRNN, LSTM, GRU,Dense
@@ -13,13 +16,12 @@ from sklearn.metrics import mean_absolute_error
 import random
 from tensorflow.keras.optimizers import Nadam
 from keras.models import load_model
+import matplotlib.pyplot as plt
 
-df=import_merged_data().drop(columns=['price_actual'])
-df['price_day_ahead_shifted'] = df['price_day_ahead'].shift(24)
-df = df.dropna()
-X, y=normalize_dataset(df)
-X=pd.DataFrame(X)
-y=pd.DataFrame(y)
+df = import_merged_data()
+y=df[['price_day_ahead']]
+preprocessor  = run_pipeline(df)
+X_preprocessed = pd.DataFrame(preprocessor.fit_transform(df))
 
 def sequence_data(X, y,
                   n_observation_X, n_observation_y,
@@ -48,7 +50,8 @@ def sequence_data(X, y,
         index=0
         for i in sample_list[0:n_sequence]:
             X_[index] = X.iloc[i:i + n_observation_X].values
-            y_[index]= y.iloc[i + n_observation_X:i + n_observation_X + n_observation_y].values
+            y_[index]= y.iloc[i:i + n_observation_y].values
+
             index=index+1
         return X_, y_
 
@@ -61,28 +64,37 @@ def sequence_data(X, y,
 
 n_observation_X=24 * 7*4  # For example, a week of data for the sequence
 n_observation_y=24 # We would like to forecast the 24 prices of the next day during the auction of today
-n_sequence_train=60
-n_sequence_val=5
-n_sequence_test=5
+n_sequence_train=200
+n_sequence_val=100
+n_sequence_test=100
 val_cutoff=0.8
 test_cutoff=0.9
 
-
-X_train, X_val, X_test, y_train, y_val,y_test = sequence_data(X, y,
+X_train, X_val, X_test, y_train, y_val,y_test = sequence_data(X_preprocessed, y,
                   n_observation_X, n_observation_y,
                   n_sequence_train,n_sequence_val,n_sequence_test,
                   val_cutoff,test_cutoff)
 
+# Baseline model
+
+y_flaten=np.reshape(y_train,(-1, 1))
+y_flaten=pd.DataFrame(y_flaten)
+y_true_baseline=y_flaten[24:]
+y_pred_baseline= y_flaten.shift(24)[24:]
+print(f"MAE: {round(mean_absolute_error(y_true_baseline, y_pred_baseline),2)} and the mean of day ahead price is : {round(y_true_baseline.mean()[0],2)}")
+
 model = Sequential()
-model.add(LSTM(units=64, input_shape=X_train.shape[1:], return_sequences=True))
-model.add(LSTM(units=64, return_sequences=True))
+model.add(LSTM(units=16, input_shape=X_train.shape[1:], return_sequences=True))
+model.add(LSTM(units=32, return_sequences=True))
 model.add(LSTM(units=64, return_sequences=False))
-model.add(Dense(y.shape[1], activation='linear'))  # Output layer with 24 neurons (one for each hour)
+model.add(Dense(24, activation='linear'))  # Output layer with 24 neurons (one for each hour)
 
 # Compile and train the model
 initial_learning=0.01 # Default value is 0.001
 optimizer = Nadam(lr=initial_learning) #change the optimizer and right all the default value
 model.compile(optimizer=optimizer, loss='mse',metrics=['mae'])
-es = callbacks.EarlyStopping(patience=15, restore_best_weights=True)
-model.fit(X_train, y_train, epochs=1000, batch_size=16, callbacks=[es], validation_data=(X_val,y_val),verbose=1,shuffle=False)
+es = callbacks.EarlyStopping(patience=5, restore_best_weights=True)
+model.fit(X_train, y_train, epochs=30, batch_size=16, callbacks=[es], validation_data=(X_val,y_val),verbose=1,shuffle=False)
+
+
 model.save('model.h5')
