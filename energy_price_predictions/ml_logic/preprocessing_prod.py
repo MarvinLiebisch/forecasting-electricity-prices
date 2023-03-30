@@ -28,7 +28,7 @@ def run_pipeline(df, numerical_scaler = "min_max_scaler", time_features = True,
                                         'generation_fossil_oil',
                                         'generation_hydro_run-of-river_and_poundage',
                                         'generation_wind_onshore',
-                                        'generation_hydro_pumped_storage_consumption','price_day_ahead']):
+                                        'generation_hydro_pumped_storage_consumption']):
 
     ''' Runs provided features through preprocessing pipeline.
         Object columns are one_hot_encoded.
@@ -45,11 +45,6 @@ def run_pipeline(df, numerical_scaler = "min_max_scaler", time_features = True,
                 np.array
     '''
 
-    if df['total_load_actual'].isnull().any():
-        df['total_load_actual'].fillna(df['total_load_actual_forecast'], inplace=True)
-
-    if df['generation_wind_onshore'].isnull().any():
-        df['generation_wind_onshore'].fillna(df['forecast_wind_onshore_day_ahead'], inplace=True)
 
 
     # Define the scalers
