@@ -13,6 +13,25 @@ from energy_price_predictions.ml_logic.registry import *
 from energy_price_predictions.ml_logic.preprocessing_prod import *
 
 #API_URL = "https://electricitypricepredictions-nrgmmiocwa-ew.a.run.app/predict"
+
+
+# Currency Data API
+
+# app_id = "84b936ca8c184c9eb9026d101a377e9d"
+# url = f"https://openexchangerates.org/api/latest.json?app_id={app_id}&prettyprint=false&show_alternative=false"
+
+# headers = {"accept": "application/json"}
+
+# response_cur = requests.get(url, headers=headers)
+# cur_data = response_cur.json()
+# EURUSD = 1/cur_data['rates']['EUR']
+# EURGBP = cur_data['rates']['GBP']*EURUSD
+# RATE = {
+#     'EUR': 1,
+#     'USD': EURUSD,
+#     'GBP': EURGBP,
+
+
 RATE = {
     'EUR': 1,
     'USD': 1.08,
@@ -38,7 +57,7 @@ def create_plot_historical_data(df, colors, is_sma=True):
         )
     )
     yaxis=dict(
-        title=f'price day ahead per MWh (in {currency})',
+        title=f'Price day-ahead per MWh (in {currency})',
         showgrid=True,
         showline=False,
         zeroline=False,
@@ -73,20 +92,20 @@ def create_plot_historical_data(df, colors, is_sma=True):
     # Update legend name
     newnames = {
         'price_day_ahead': 'Real price',
-        'price_day_ahead_prediction': 'Predicted price',
+        'price_day_ahead_prediction': 'Predicted Price',
     }
     colors_ = {
         'price_day_ahead': colors[0],
         'price_day_ahead_prediction': colors[1],
     }
     line_width = {
-        'price_day_ahead': 0.5,
+        'price_day_ahead': 1,
         'price_day_ahead_prediction': 1,
     }
     if is_sma:
         newnames['30D_SMA'] = 'Real price 30D_SMA'
         colors_['30D_SMA'] = colors[2]
-        line_width['30D_SMA'] = 2
+        line_width['30D_SMA'] = 1
     fig.for_each_trace(lambda t: t.update(name = newnames[t.name],
                                         legendgroup = newnames[t.name],
                                         hovertemplate = t.hovertemplate.replace(t.name, newnames[t.name]),
@@ -102,13 +121,26 @@ def create_plot_hourly(df, colors, columns, width):
         showgrid=False,
         showline=False,
         zeroline=False,
+        rangeselector=dict(
+            buttons=list([
+                dict(count=24, label="24 hour", step="hour", stepmode="backward"),
+                dict(count=3, label="3 days", step="day", stepmode="backward"),
+                dict(count=7, label="1 week", step="day", stepmode="backward"),
+                dict(count=1, label="1 month", step="month", stepmode="backward"),
+                dict(count=1, label="1 year", step="year", stepmode="backward"),
+                dict(step="all"),
+            ])
+        )
     )
+
+
     yaxis=dict(
-        title=f'price day ahead per MWh (in {currency})',
+        title=f'Price day-ahead per MWh (in {currency})',
         showgrid=True,
         showline=False,
         zeroline=False,
     )
+
     legend=dict(
         yanchor="bottom",
         y=-0.3,
@@ -131,8 +163,10 @@ def create_plot_hourly(df, colors, columns, width):
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         template='plotly_dark',
+        xaxis_rangeselector_font_color='black',
+        xaxis_rangeselector_activecolor='gray',
+        xaxis_rangeselector_bgcolor='silver',
     )
-
     # Update legend name
     colors_ = {col: colors[idx] for idx,col in enumerate(columns)}
     line_width = {col: width for idx,col in enumerate(columns)}
@@ -149,7 +183,7 @@ with col1:
     st.write(' ')
 
 with col2:
-    st.image("https://i.ibb.co/1RGqJKL/Neural-Energy-white-on-streamlit.png", width=200)
+    st.image("https://i.ibb.co/1RGqJKL/Neural-Energy-white-on-streamlit.png", width=300)
 
 with col3:
     st.write(' ')
@@ -175,6 +209,8 @@ with col2:
         ['EUR', 'USD', 'GBP']
     )
 
+st.markdown("***")
+
 df['price_day_ahead'] = RATE[currency] * df['price_day_ahead']
 df['price_day_ahead_prediction'] = RATE[currency] * df['price_day_ahead_prediction']
 
@@ -197,63 +233,92 @@ yday = today - timedelta(1)
 twoday = today - timedelta(2)
 lweek = today - timedelta(7)
 st.markdown(f'''
-### Table 1. Prediction price (as of {str(today)})
+### Day-ahead Price Predictions (as of {str(today.strftime("%d/%m/%Y"))})
 ''')
+### Day-ahead Price Predictions (as of {str(today)})
+
 table_yday = df[df['time'].apply(lambda x: x.date()) == yday][['time', 'price_day_ahead']].drop_duplicates('time')
 table_2yday = df[df['time'].apply(lambda x: x.date()) == twoday][['time', 'price_day_ahead']].drop_duplicates('time')
 table_today = df[df['time'].apply(lambda x: x.date()) == today][['time', 'price_day_ahead_prediction']].drop_duplicates('time')
 table_lweek = df[df['time'].apply(lambda x: x.date()) == lweek][['time', 'price_day_ahead']].drop_duplicates('time')
-table_yday['hour'] = table_yday['time'].apply(lambda x: x.hour).astype(str)
-table_today['hour'] = table_today['time'].apply(lambda x: x.hour).astype(str)
-table_lweek['hour'] = table_lweek['time'].apply(lambda x: x.hour).astype(str)
+table_yday['Hour'] = table_yday['time'].apply(lambda x: x.hour).astype(str)
+table_today['Hour'] = table_today['time'].apply(lambda x: x.hour).astype(str)
+table_lweek['Hour'] = table_lweek['time'].apply(lambda x: x.hour).astype(str)
 table_yday['price_day_ahead_yday'] = table_yday['price_day_ahead']
 table_today['price_day_ahead_today'] = table_today['price_day_ahead_prediction']
 table_lweek['price_day_ahead_lweek'] = table_lweek['price_day_ahead']
-table_yday.set_index('hour', inplace=True)
-table_today.set_index('hour', inplace=True)
-table_lweek.set_index('hour', inplace=True)
-table_diff_day = table_today[['price_day_ahead_today']].join(table_yday[['price_day_ahead_yday']], on='hour')
-table_diff_week = table_today[['price_day_ahead_today']].join(table_lweek[['price_day_ahead_lweek']], on='hour')
-table_today['change vs. today (%)'] = (table_diff_day['price_day_ahead_today']/table_diff_day['price_day_ahead_yday']-1)*100
-table_today['change vs. last week (%)'] = (table_diff_week['price_day_ahead_today']/table_diff_week['price_day_ahead_lweek']-1)*100
-table_today['change vs. today (%)'] = table_today['change vs. today (%)'].apply(lambda x: f'▲ {round(x,2)}' if x > 0 else f'▼ {round(x,2)}')
-table_today['change vs. last week (%)'] = table_today['change vs. last week (%)'].apply(lambda x: f'▲ {round(x,2)}' if x > 0 else f'▼ {round(x,2)}')
-table_today[f'predicted price ({currency})'] = table_today['price_day_ahead_prediction'].apply(lambda x: f'{round(x, 2)}')
-table_today_chart = table_today.reset_index()[['hour', f'predicted price ({currency})', 'change vs. today (%)', 'change vs. last week (%)']]
+table_yday.set_index('Hour', inplace=True)
+table_today.set_index('Hour', inplace=True)
+table_lweek.set_index('Hour', inplace=True)
+table_diff_day = table_today[['price_day_ahead_today']].join(table_yday[['price_day_ahead_yday']], on='Hour')
+table_diff_week = table_today[['price_day_ahead_today']].join(table_lweek[['price_day_ahead_lweek']], on='Hour')
+table_today['Change vs. Today (%)'] = (table_diff_day['price_day_ahead_today']/table_diff_day['price_day_ahead_yday']-1)*100
+table_today['Change vs. Last Week (%)'] = (table_diff_week['price_day_ahead_today']/table_diff_week['price_day_ahead_lweek']-1)*100
+
+########################################################################
+dm_high_hour = table_today['Change vs. Today (%)'].idxmax()
+dm_high = table_today['price_day_ahead_prediction'][dm_high_hour]
+dm_high_change = table_today['Change vs. Today (%)'][dm_high_hour]
+dm_low_hour = table_today['Change vs. Today (%)'].idxmin()
+dm_low = table_today['price_day_ahead_prediction'][dm_low_hour]
+dm_low_change= table_today['Change vs. Today (%)'][dm_low_hour]
+wm_high_hour = table_today['Change vs. Last Week (%)'].idxmax()
+wm_high = table_today['price_day_ahead_prediction'][wm_high_hour]
+wm_high_change = table_today['Change vs. Last Week (%)'][wm_high_hour]
+wm_low_hour = table_today['Change vs. Last Week (%)'].idxmin()
+wm_low = table_today['price_day_ahead_prediction'][wm_low_hour]
+wm_low_change = table_today['Change vs. Last Week (%)'][wm_low_hour]
+########################################################################
+
+table_today['Change vs. Today (%)'] = table_today['Change vs. Today (%)'].apply(lambda x: f'▲ {round(x,2)}' if x > 0 else f'▼ {round(x,2)}')
+table_today['Change vs. Last Week (%)'] = table_today['Change vs. Last Week (%)'].apply(lambda x: f'▲ {round(x,2)}' if x > 0 else f'▼ {round(x,2)}')
+table_today[f'Predicted Price ({currency})'] = table_today['price_day_ahead_prediction'].apply(lambda x: f'{round(x, 2)}')
+table_today_chart = table_today.reset_index()[['Hour', f'Predicted Price ({currency})', 'Change vs. Today (%)', 'Change vs. Last Week (%)']]
+
 col1, col2 = st.columns(2)
 with col1:
-    st.table(table_today_chart.iloc[0:-12].style.applymap(color_template, subset=['change vs. today (%)', 'change vs. last week (%)']))
+    st.table(table_today_chart.iloc[0:-12].style.applymap(color_template, subset=['Change vs. Today (%)', 'Change vs. Last Week (%)']))
 with col2:
-    st.table(table_today_chart.iloc[12:24].style.applymap(color_template, subset=['change vs. today (%)', 'change vs. last week (%)']))
+    st.table(table_today_chart.iloc[12:24].style.applymap(color_template, subset=['Change vs. Today (%)', 'Change vs. Last Week (%)']))
 
 # Ticker
 # For below text boxes
 col1, col2, col3, col4 = st.columns(4)
+
 with col1:
-    current = table_yday['price_day_ahead'].mean()
-    previous = table_2yday['price_day_ahead'].mean()
-    st.metric(f'Current Eletricity Price ({currency})', round(current,2), delta = f'{round((current/previous-1)*100, 2)} %')
+    st.markdown('#### Daily Movers')
+    st.markdown(f"Hour {dm_high_hour}")
+    st.metric(f'High (24 h)', round(dm_high,2),  f'{round(dm_high_change,1)} %')
+
 with col2:
-    tomorrow = table_today['price_day_ahead_prediction'].mean()
-    st.metric('Tomorrow\'s Price Prediction', round(tomorrow,2), delta = f'{round((tomorrow/current-1)*100, 2)} %')
+    st.markdown('#### ')
+    st.markdown('#### ')
+    st.markdown(f"Hour {dm_low_hour}")
+    st.metric(f'Low (24 h)', round(dm_low,2),  f'{round(dm_low_change,1)} %')
+
 with col3:
-    tomorrow_lowest = table_today['price_day_ahead_prediction'].min()
-    st.metric('Lowest Price Prediction (24 hr)', round(tomorrow_lowest,2), f'{round((tomorrow_lowest/current-1)*100, 2)} %')
+    st.markdown('#### Weekly Movers')
+    st.markdown(f"Hour {wm_high_hour}")
+    st.metric(f'High (7 d)', round(wm_high,2),  f'{round(wm_high_change,1)} %')
+
 with col4:
-    tomorrow_highest = table_today['price_day_ahead_prediction'].max()
-    st.metric('Highest Price Prediction (24 hr)', round(tomorrow_highest,2), f'{round((tomorrow_highest/current-1)*100, 2)} %')
+    st.markdown('#### ')
+    st.markdown('#### ')
+    st.markdown(f"Hour {wm_low_hour}")
+    st.metric(f'Low (7 d)', round(wm_low,2),  f'{round(wm_low_change,1)} %')
+
 
 # Plot 1
 '''
 #
 #
-### Plot 1
+### Day-ahead Prices Min/Max/Mean
 '''
 df_plot1 = df
 col1, col2 = st.columns(2)
 with col1:
     selected_plot1 = st.selectbox('Select hour',
-        [f'{i} am' for i in range(0,12)] + [f'{i} pm' for i in range(12,24)]
+        [f'{i} ' for i in range(0,24)]
     )
 with col2:
     selected_rolling_window = int(st.radio('Select day window',
@@ -265,13 +330,13 @@ hour_plot1 = int(selected_plot1.split(' ')[0])
 df_plot1 = df_plot1[df_plot1['time'].apply(lambda x: x.hour) == hour_plot1]
 
 df_plot1['price_day_ahead'] = RATE[currency] * df_plot1['price_day_ahead']
-df_plot1[f'min_{selected_rolling_window}D'] = df_plot1['price_day_ahead'].rolling(selected_rolling_window).min()
-df_plot1[f'mean_{selected_rolling_window}D'] = df_plot1['price_day_ahead'].rolling(selected_rolling_window).mean()
-df_plot1[f'max_{selected_rolling_window}D'] = df_plot1['price_day_ahead'].rolling(selected_rolling_window).max()
+df_plot1[f'Min {selected_rolling_window}d'] = df_plot1['price_day_ahead'].rolling(selected_rolling_window).min()
+df_plot1[f'Mean {selected_rolling_window}d'] = df_plot1['price_day_ahead'].rolling(selected_rolling_window).mean()
+df_plot1[f'Max {selected_rolling_window}d'] = df_plot1['price_day_ahead'].rolling(selected_rolling_window).max()
 
 fig_plot1 = create_plot_hourly(df_plot1,
     colors = ['purple', 'green', 'blue'],
-    columns = [f'min_{selected_rolling_window}D', f'mean_{selected_rolling_window}D', f'max_{selected_rolling_window}D'],
+    columns = [f'Min {selected_rolling_window}d', f'Mean {selected_rolling_window}d', f'Max {selected_rolling_window}d'],
     width = 1.5,
 )
 
@@ -279,24 +344,28 @@ st.plotly_chart(fig_plot1, theme="streamlit", use_container_width=True)
 
 # Plot 2
 '''
-### Plot 2
+#
+#
+### Historical Prices vs. Predictions (overall)
 '''
 df['30D_SMA'] = df['price_day_ahead'].rolling(24*30).mean()
 # This is for streamlit main page (chart)
 # Properties of figure
-fig = create_plot_historical_data(df, colors=['white', 'green', 'cyan'], is_sma=True)
+fig = create_plot_historical_data(df, colors=['blue', 'green', 'white'], is_sma=True)
 
 st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 # Plot 3
 '''
-## Plot 3
+#
+#
+### Historical Prices vs. Predictions (by hour)
 '''
 df_hour = df
 col1, col2 = st.columns(2)
 with col1:
     selected_hour = st.selectbox('Select hour ',
-        [f'{i} am' for i in range(0,12)] + [f'{i} pm' for i in range(12,24)]
+        [f'{i}' for i in range(0,24)]
     )
 # Filter based on selected hour
 if selected_hour != 'all':
@@ -306,9 +375,10 @@ if selected_hour != 'all':
 df_hour['price_day_ahead'] = RATE[currency] * df_hour['price_day_ahead']
 
 fig_hour = create_plot_historical_data(df_hour,
-                                       colors=['rgba(200, 200, 200, 0.1)','rgba(255, 255, 255, 1)'],
-                                       is_sma=False)
 
+                                       colors=['green', 'blue'],
+                                       is_sma=False)
+                                       #colors=['rgba(180, 180, 180, 1)','rgba(255, 255, 255, 1)'],
 st.plotly_chart(fig_hour, theme="streamlit", use_container_width=True)
 
 st.text("")
