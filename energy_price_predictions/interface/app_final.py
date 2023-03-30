@@ -17,7 +17,7 @@ from energy_price_predictions.ml_logic.preprocessing_prod import *
 
 # Currency Data API
 
-# app_id = "84b936ca8c184c9eb9026d101a377e9d"
+# app_id = st.secrets["CUR_API_KEY"]
 # url = f"https://openexchangerates.org/api/latest.json?app_id={app_id}&prettyprint=false&show_alternative=false"
 
 # headers = {"accept": "application/json"}
