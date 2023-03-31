@@ -9,8 +9,8 @@ import subprocess
 import sys
 
 from energy_price_predictions.ml_logic.data_import import *
-from energy_price_predictions.ml_logic.registry import *
-from energy_price_predictions.ml_logic.preprocessing_prod import *
+# from energy_price_predictions.ml_logic.registry import *
+# from energy_price_predictions.ml_logic.preprocessing_prod import *
 
 #API_URL = "https://electricitypricepredictions-nrgmmiocwa-ew.a.run.app/predict"
 
@@ -74,7 +74,7 @@ def create_plot_historical_data(df, colors, is_sma=True):
     fig = px.line(df,
         x='time',
         y=['price_day_ahead', 'price_day_ahead_prediction', '30D_SMA'] if is_sma else ['price_day_ahead', 'price_day_ahead_prediction'],
-        width=15,
+        #width=15,
     )
 
     fig.update_layout(
