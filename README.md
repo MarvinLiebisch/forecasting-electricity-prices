@@ -15,7 +15,7 @@ Our LSTM model is predicting the price of the aforementioned day-ahead auctions.
 
 ### Front End
 
-The generated predictions as well as historical data are visualized here: [Streamlit](https://marvinliebisch-forecasting-electricity-prices-app-7l09ji.streamlit.app/)
+The generated predictions as well as historical data are visualized here: [Streamlit](https://forecasting-electricity-prices.streamlit.app/)
 
 
 ## Setup
