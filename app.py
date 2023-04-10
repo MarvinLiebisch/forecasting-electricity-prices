@@ -183,7 +183,7 @@ with col1:
     st.write(' ')
 
 with col2:
-    st.image("https://i.ibb.co/1RGqJKL/Neural-Energy-white-on-streamlit.png", width=300)
+    st.image("https://i.ibb.co/qnw86nq/Neural-Energy-white-on-streamlit.png", width=300)
 
 with col3:
     st.write(' ')
