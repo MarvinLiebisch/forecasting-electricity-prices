@@ -13,6 +13,10 @@ Day-ahead auctions are used in electricity markets to facilitate the purchase an
 
 Our LSTM model is predicting the price of the aforementioned day-ahead auctions. We do so by using time-series data for power generation and previously observed prices.
 
+### Front End
+
+The generated predictions as well as historical data are visualized here: [Streamlit](https://marvinliebisch-forecasting-electricity-prices-app-7l09ji.streamlit.app/)
+
 
 ## Setup
 
